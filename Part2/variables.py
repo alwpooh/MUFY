@@ -1,0 +1,2 @@
+#float = decimals
+#string = "" characters
