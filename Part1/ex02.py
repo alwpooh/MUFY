@@ -1,0 +1,2 @@
+text = "myname"
+print(text)
