@@ -61,8 +61,10 @@ THEMES = {
     },
     "City View": {
         "type": "image", 
-        "value": "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=1200&q=80", 
-        "text": "#1C1C1E"
+        # This direct URL pulls your exact chosen image safely every time
+        "value": "https://source.unsplash.com/lZXyGjsRnP0/1200x800", 
+        # Dark text color so you can read your tasks against the bright concrete buildings
+        "text": "#0F2D4A"
     }
 }
 
