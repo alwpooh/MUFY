@@ -1,4 +1,3 @@
-
 import streamlit as st
 import streamlit.components.v1 as components
 import pandas as pd
@@ -271,6 +270,8 @@ st.markdown(custom_css, unsafe_allow_html=True)
 
 
 
+
+
 # --- MAIN APPLICATION LOGIC ---
 st.title("📆 Daily Notion-Style Planner")
 
@@ -300,6 +301,21 @@ def add_task_callback():
 
 
 st.subheader(f"Tasks for {selected_date.strftime('%B %d, %Y')}")
+
+
+# --- PROGRESS BAR CALCULATIONS ---
+num_active = len(day_tasks["active"])
+num_completed = len(day_tasks["completed"])
+total_tasks = num_active + num_completed
+
+
+if total_tasks > 0:
+    progress_percentage = int((num_completed / total_tasks) * 100)
+    st.progress(num_completed / total_tasks)
+    st.caption(f"📊 Progress: **{progress_percentage}%** ({num_completed}/{total_tasks} tasks done)")
+else:
+    st.progress(0.0)
+    st.caption("📊 Progress: **0%** (No tasks scheduled for today)")
 
 
 tab_active, tab_completed = st.tabs(["📂 Active Tasks", "📁 Completed Archive"])
@@ -338,6 +354,11 @@ with tab_active:
             task_to_move = day_tasks["active"].pop(to_complete)
             day_tasks["completed"].append(task_to_move)
             save_data()  
+            
+            # Trigger confetti effect if the last active task was completed
+            if len(day_tasks["active"]) == 0:
+                st.balloons()
+                
             st.rerun()
 
 
@@ -577,7 +598,7 @@ function renderSingleNote(note) {
 
         let shiftX = e.clientX - noteDiv.getBoundingClientRect().left;
         let shiftY = e.clientY - noteDiv.getBoundingClientRect().top;
-       
+        
         function moveAt(clientX, clientY) {
             let targetX = clientX - canvas.getBoundingClientRect().left - shiftX;
             let targetY = clientY - canvas.getBoundingClientRect().top - shiftY;

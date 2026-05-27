@@ -10,10 +10,10 @@
         "completed": []
     },
     "2026-05-27": {
-        "active": [
+        "active": [],
+        "completed": [
             "do laundry",
             "complete homework"
-        ],
-        "completed": []
+        ]
     }
 }
