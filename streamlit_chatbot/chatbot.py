@@ -39,10 +39,11 @@ if "settings" not in st.session_state.todo_data:
     st.session_state.todo_data["settings"] = {
         "theme": "Sea View",  
         "font": "Modern Sans (Inter)",
-        "custom_text": "#0F2D4A" # Default fallback text color
+        "custom_text": "#0F2D4A", 
+        "animal": "🦊 Fox"        
     }
 
-# --- CONFIGURATION MAPS FOR THEMES & FONTS ---
+# --- CONFIGURATION MAPS FOR THEMES, FONTS & ANIMALS ---
 THEMES = {
     "Default": {
         "type": "image",
@@ -61,9 +62,7 @@ THEMES = {
     },
     "City View": {
         "type": "image", 
-        # Verified working direct CDN link for a bright concrete city layout
         "value": "https://images.unsplash.com/photo-1506606401543-2e73709cebb4?auto=format&fit=crop&w=2400&q=1600", 
-        # Dark charcoal text so it's readable over the white/grey concrete buildings
         "text": "#1A1A24"
     }
 }
@@ -75,13 +74,35 @@ FONTS = {
     "Minimal Code (Roboto Mono)": "'Roboto Mono', monospace"
 }
 
+# Ultra-stable Google Noto Vector Asset CDN links
+ANIMALS = {
+    "None": None,
+    "🦊 Fox": "https://cdn.jsdelivr.net/gh/googlefonts/noto-emoji@main/svg/emoji_u1f98a.svg",
+    "🐼 Panda": "https://cdn.jsdelivr.net/gh/googlefonts/noto-emoji@main/svg/emoji_u1f43c.svg",
+    "🐱 Cat": "https://cdn.jsdelivr.net/gh/googlefonts/noto-emoji@main/svg/emoji_u1f431.svg",
+    "🐸 Frog": "https://cdn.jsdelivr.net/gh/googlefonts/noto-emoji@main/svg/emoji_u1f438.svg",
+    "🐰 Bunny": "https://cdn.jsdelivr.net/gh/googlefonts/noto-emoji@main/svg/emoji_u1f430.svg",
+    "🦁 Lion": "https://cdn.jsdelivr.net/gh/googlefonts/noto-emoji@main/svg/emoji_u1f981.svg"
+}
+
+# Mapping animals to their tailored custom CSS animation classes
+ANIMAL_CLASSES = {
+    "🦊 Fox": "anim-fox",
+    "🐼 Panda": "anim-panda",
+    "🐱 Cat": "anim-cat",
+    "🐸 Frog": "anim-frog",
+    "🐰 Bunny": "anim-bunny",
+    "🦁 Lion": "anim-lion"
+}
+
 # --- CALLBACK FOR LIVE VISUAL UPDATES ---
 def update_settings_callback():
     """Maintains and writes the appearance configurations to the file."""
     st.session_state.todo_data["settings"] = {
         "theme": st.session_state.sb_theme,
         "font": st.session_state.sb_font,
-        "custom_text": st.session_state.get("sb_custom_text", "#0F2D4A") # Saves custom text choice
+        "custom_text": st.session_state.get("sb_custom_text", "#0F2D4A"),
+        "animal": st.session_state.get("sb_animal", "🦊 Fox") 
     }
     save_data()
 
@@ -128,6 +149,36 @@ else:
 default_text_color = saved_settings.get("custom_text", theme_config["text"])
 text_color = st.sidebar.color_picker("Text Color Override", default_text_color, key="sb_custom_text", on_change=update_settings_callback)
 
+# --- ANIMAL COMPANION SELECTOR ---
+st.sidebar.write("---")
+st.sidebar.subheader("🐾 Sidebar Companion")
+
+saved_animal = saved_settings.get("animal", "🦊 Fox")
+if saved_animal not in ANIMALS:
+    saved_animal = "🦊 Fox"
+animal_index = list(ANIMALS.keys()).index(saved_animal)
+
+selected_animal = st.sidebar.selectbox(
+    "Choose a companion",
+    list(ANIMALS.keys()),
+    index=animal_index,
+    key="sb_animal",
+    on_change=update_settings_callback
+)
+
+# Display the custom dynamic cartoon animal with its unique behavior class
+if selected_animal != "None" and ANIMALS[selected_animal]:
+    st.sidebar.write("")
+    anim_class = ANIMAL_CLASSES.get(selected_animal, "animated-companion")
+    st.sidebar.markdown(
+        f"""
+        <div style="display: flex; justify-content: center; margin-top: 10px;">
+            <img src="{ANIMALS[selected_animal]}" class="{anim_class}" width="95">
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
 font_family = FONTS[selected_font]
 
 # --- INJECT DYNAMIC CUSTOM CSS ---
@@ -147,9 +198,14 @@ custom_css = f"""
 }}
 
 /* Apply global font style and structural text color overrides */
-h1, h2, h3, h4, h5, h6, p, label, .stMarkdown, .stTabs [data-baseweb="tab"] p, .stCaption {{
+h1, h2, h3, h4, h5, h6, p, label, li, .stMarkdown, .stTabs [data-baseweb="tab"] p, .stCaption {{
     font-family: {font_family} !important;
     color: {text_color} !important;
+}}
+
+/* Enlarge ONLY the body text, labels, and list items (ignores headings) */
+p, label, li, .stMarkdown p, .stTabs [data-baseweb="tab"] p, .stCaption {{
+    font-size: 18px !important; 
 }}
 
 /* Remove sidebar arrow background wrapper */
@@ -165,6 +221,66 @@ h1, h2, h3, h4, h5, h6, p, label, .stMarkdown, .stTabs [data-baseweb="tab"] p, .
     fill: {text_color} !important;
     color: {text_color} !important;
 }}
+
+
+/* --- CHARACTER SPECIFIC ANIMAL ACTIONS --- */
+
+/* Fox: Curious Head Tilt */
+@keyframes foxTilt {{
+    0%, 100% {{ transform: rotate(0deg); }}
+    15% {{ transform: rotate(-10deg); }}
+    30% {{ transform: rotate(10deg); }}
+    45% {{ transform: rotate(0deg); }}
+}}
+.anim-fox {{ animation: foxTilt 4s ease-in-out infinite; filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.15)); }}
+
+/* Panda: Sleepy Swaying Breath */
+@keyframes pandaSway {{
+    0%, 100% {{ transform: translate(0, 0) rotate(0deg); }}
+    50% {{ transform: translate(2px, 2px) rotate(3deg) scaleY(0.95); }}
+}}
+.anim-panda {{ animation: pandaSway 5s ease-in-out infinite; filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.15)); }}
+
+/* Cat: Wiggle Wiggle... Pounce! */
+@keyframes catWiggle {{
+    0%, 70%, 100% {{ transform: translate(0, 0) scale(1); }}
+    73% {{ transform: translate(-2px, 0) rotate(-3deg); }}
+    76% {{ transform: translate(2px, 0) rotate(3deg); }}
+    79% {{ transform: translate(-2px, 0) rotate(-3deg); }}
+    85% {{ transform: translateY(-12px) scaleY(1.05); }}
+}}
+.anim-cat {{ animation: catWiggle 4.5s ease-in-out infinite; transform-origin: bottom center; filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.15)); }}
+
+/* Frog: Wind-up Croak & Hop */
+@keyframes frogHop {{
+    0%, 60%, 100% {{ transform: translateY(0) scale(1); }}
+    65% {{ transform: scaleY(0.75) scaleX(1.1); }}
+    70% {{ transform: translateY(-25px) scaleY(1.1) scaleX(0.9); }}
+    75% {{ transform: translateY(0) scaleY(0.85) scaleX(1.05); }}
+}}
+.anim-frog {{ animation: frogHop 3.5s ease-in-out infinite; transform-origin: bottom center; filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.15)); }}
+
+/* Bunny: Nose Twitch & Quick Hop */
+@keyframes bunnyHop {{
+    0%, 40%, 70%, 100% {{ transform: translateY(0); }}
+    10%, 30% {{ transform: translateY(-1px) scaleY(1.02); }}
+    20% {{ transform: translateY(1px); }}
+    45% {{ transform: scaleY(0.8); }}
+    52% {{ transform: translateY(-18px) rotate(5deg); }}
+    60% {{ transform: translateY(0) scaleY(0.9); }}
+}}
+.anim-bunny {{ animation: bunnyHop 4s ease-in-out infinite; transform-origin: bottom center; filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.15)); }}
+
+/* Lion: Proud Shake & Roar */
+@keyframes lionRoar {{
+    0%, 70%, 100% {{ transform: scale(1) rotate(0); }}
+    75% {{ transform: scale(1.1) rotate(-2deg); }}
+    80%, 88% {{ transform: scale(1.15) translate(1px, -1px) rotate(2deg); }}
+    82%, 90% {{ transform: scale(1.15) translate(-1px, 1px) rotate(-2deg); }}
+    84% {{ transform: scale(1.15) translate(1px, 1px) rotate(1deg); }}
+    95% {{ transform: scale(1) rotate(0); }}
+}}
+.anim-lion {{ animation: lionRoar 5s ease-in-out infinite; transform-origin: bottom center; filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.15)); }}
 </style>
 """
 st.markdown(custom_css, unsafe_allow_html=True)

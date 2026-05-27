@@ -2,7 +2,8 @@
     "settings": {
         "theme": "Default",
         "font": "Default Sans",
-        "custom_text": "#ffffff"
+        "custom_text": "#ffffff",
+        "animal": "\ud83e\udd81 Lion"
     },
     "2026-05-26": {
         "active": [],
